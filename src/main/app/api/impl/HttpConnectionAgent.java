@@ -1,4 +1,4 @@
-package App.VKontakte;
+package app.api.impl;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+// Класс для отправки запроса
 public abstract class HttpConnectionAgent {
 
     public static HttpResponse connectResponse(URIBuilder uriBuilder) {
