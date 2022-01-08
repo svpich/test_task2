@@ -1,18 +1,16 @@
 package app.api.impl;
 
+import app.api.abstracts.VK_Api;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.codec.HttpMessageEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpUtils;
-
 @Component
-public class VK_ApiImpl implements app.api.abstracts.VK_Api {
+public class VK_ApiImpl implements VK_Api {
 
     URIBuilder uriBuilder;
-    final static String ACCESS_TOKEN = "d639528e12579c0998f65e0eae3294f9214c2743bb2b69653c933fcd51feca04b88b339e31703b7e15385";
+    final static String ACCESS_TOKEN = "04b0e82e3ee805c6d7971293509b97eb1a845d6f9e5e365714215b02a465c95dafc59db01590ce549a5dd";
     final static String PROTOCOL = "https";
     final static String HOST = "api.vk.com";
     final static String API_VERSION = "5.131";
@@ -23,7 +21,7 @@ public class VK_ApiImpl implements app.api.abstracts.VK_Api {
     }
 
     @Override
-    public HttpResponse findGroupBySubstring(String subString) {
+    public HttpResponse findGroupsBySubstring(String subString) {
         uriBuilder.setScheme(PROTOCOL).setHost(HOST).setPath("/method/groups.search")
                 .setParameter("q", subString)
                 .setParameter("v", API_VERSION)
@@ -49,7 +47,7 @@ public class VK_ApiImpl implements app.api.abstracts.VK_Api {
     }
 
     @Override
-    public HttpResponse findUserGroupByUserId(String userId) {
+    public HttpResponse findUserGroupsByUserId(String userId) {
         uriBuilder.setScheme(PROTOCOL).setHost(HOST).setPath("/method/groups.get")
                 .setParameter("user_id", userId)
                 .setParameter("extended", "1")
