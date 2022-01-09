@@ -272,6 +272,8 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
             user.setFirstName("ivan");
             user.setLastName("iadf");
+            UserDTO userDTO = userMapper.userToUserDTO(user);
+            System.out.println(" преобразован пользователь " + userDTO.getFirstName());
             userDAO.persist(user);
 
 

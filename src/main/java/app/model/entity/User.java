@@ -13,6 +13,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "user_vk")
 public class User {
+
+    @Id
+    @Column(name = "id")
+    int id;
+
+    @Column(name = "firstName")
+    String firstName;
+
+    @Column(name = "lastName")
+    String lastName;
+
     public int getId() {
         return id;
     }
@@ -36,14 +47,4 @@ public class User {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-    @Id
-    @Column(name = "id")
-    int id;
-
-    @Column(name = "firstName")
-    String firstName;
-
-    @Column(name = "lastName")
-    String lastName;
 }
