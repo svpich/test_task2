@@ -13,4 +13,5 @@ public interface VK_ApiService {
     Set<UserDTO> findUserFriendsByUserId(String userId);
     Set<GroupDTO> findUserGroupsByUserId(String userId);
     Set<GroupDTO> findUserGroupsAndUserFriendsGroupsByUserIdAndGroupsBySubstring(String userId, String subString);
+    void saveGroupToDB(String userId);
 }

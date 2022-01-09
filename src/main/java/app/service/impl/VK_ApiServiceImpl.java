@@ -1,8 +1,12 @@
 package app.service.impl;
 
 import app.api.abstracts.VK_Api;
+import app.converter.UserMapper;
+import app.dao.abstracts.GroupDAO;
+import app.dao.abstracts.UserDAO;
 import app.model.dto.GroupDTO;
 import app.model.dto.UserDTO;
+import app.model.entity.User;
 import app.service.abstracts.VK_ApiService;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -12,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,11 +27,18 @@ import java.util.*;
 public class VK_ApiServiceImpl implements VK_ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(VK_ApiServiceImpl.class);
-    VK_Api vkAPI;
+    private final VK_Api vkAPI;
+    private final GroupDAO groupDAO;
+    private final UserDAO userDAO;
+    private final UserMapper userMapper;
 
     @Autowired
-    public VK_ApiServiceImpl(VK_Api vkAPI) {
+    public VK_ApiServiceImpl(VK_Api vkAPI, GroupDAO groupDAO, UserDAO userDAO,
+                             UserMapper userMapper) {
         this.vkAPI = vkAPI;
+        this.groupDAO = groupDAO;
+        this.userDAO = userDAO;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -208,7 +220,9 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
     @Override
     // Получаем группы по подстроке и возвращаем в каких из них состоит пользователь или его друзья.
-    public Set<GroupDTO> findUserGroupsAndUserFriendsGroupsByUserIdAndGroupsBySubstring(String userId, String subString) {
+    public Set<GroupDTO> findUserGroupsAndUserFriendsGroupsByUserIdAndGroupsBySubstring
+            (String userId, String subString) {
+
         Set<GroupDTO> userGroupsSet = findUserGroupsByUserId(userId);
         Set<GroupDTO> userFriendsGroupsSet = findUserFriendsGroupsByUserId(userId);
         Set<GroupDTO> groupsBySubstringSet = findGroupsBySubstring(subString);
@@ -228,6 +242,39 @@ public class VK_ApiServiceImpl implements VK_ApiService {
         }
         logger.info("Кол-во групп в которых состоит пользователь или его друзья: " + resultSet.size());
         return resultSet;
+    }
+
+//                      <<<<<<-------->>>>>>>>
+
+    public Set<GroupDTO> findUserGroupsByUserIdAndGroupsBySubstring
+            (String userId, String subString) {
+
+        Set<GroupDTO> userGroupsSet = findUserGroupsByUserId(userId);
+        Set<GroupDTO> groupsBySubstringSet = findGroupsBySubstring(subString);
+
+        Set<GroupDTO> resultSet = new HashSet<>();
+        boolean alreadyExist;
+
+        for (GroupDTO e : userGroupsSet) {
+            alreadyExist = groupsBySubstringSet.add(e);
+
+            if (!alreadyExist) {
+                resultSet.add(e);
+            }
+        }
+        logger.info("Кол-во групп в которых состоит пользователь: " + resultSet.size());
+        return resultSet;
+    }
+
+    @Transactional
+    public void saveGroupToDB(String userId) {
+            User user = new User();
+
+            user.setFirstName("ivan");
+            user.setLastName("iadf");
+            userDAO.persist(user);
+
+
     }
 }
 
