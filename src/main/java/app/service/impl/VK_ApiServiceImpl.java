@@ -143,7 +143,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
                         userDTO.setId((int) item.get("id"));
                         userDTO.setFirstName((new String(((String) item.get("first_name"))
                                 .getBytes("Windows-1251"), StandardCharsets.UTF_8)));
-                        userDTO.setFirstName((new String(((String) item.get("last_name"))
+                        userDTO.setLastName((new String(((String) item.get("last_name"))
                                 .getBytes("Windows-1251"), StandardCharsets.UTF_8)));
 
                         resultSet.add(userDTO);
@@ -244,6 +244,11 @@ public class VK_ApiServiceImpl implements VK_ApiService {
         return resultSet;
     }
 
+    @Override
+    public void saveGroupToDB(String userId) {
+
+    }
+
 //                      <<<<<<-------->>>>>>>>
 
     public Set<GroupDTO> findUserGroupsByUserIdAndGroupsBySubstring
@@ -266,17 +271,53 @@ public class VK_ApiServiceImpl implements VK_ApiService {
         return resultSet;
     }
 
+    @Override
+    public UserDTO findUserByUserId(String userId) {
+        HttpResponse response = vkAPI.findUserByUserId(userId);
+
+        int status = response.getStatusLine().getStatusCode();
+
+        if (status == 200) {
+            StringWriter content = new StringWriter();
+
+            try {
+                IOUtils.copy(response.getEntity().getContent(), content); //копируем данные из одного потока в другой
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject outerObject = new JSONObject(content.toString());
+
+                if (outerObject.has("response")) {
+                    JSONArray itemsArray = outerObject.getJSONArray("response");
+                    JSONObject item = (JSONObject) itemsArray.get(0);
+
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.setId((int) item.get("id"));
+                    userDTO.setFirstName(((String) item.get("first_name")));
+                    userDTO.setLastName(((String) item.get("last_name")));
+
+                    logger.info("Получен пользователь c id: " + userDTO.getId());
+                } else if (outerObject.has("error")) {
+                    JSONObject innerObject = outerObject.getJSONObject("error");
+
+                    String error_msg = (String) innerObject.get("error_msg");
+                    logger.error("Не удалось получить пользователя с id: " + userId + ". Ошибка: " + error_msg);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null; //  TODO Изменить значение
+    }
+
     @Transactional
-    public void saveGroupToDB(String userId) {
-            User user = new User();
+    public void saveUserToDB(String userId) {
+        UserDTO userDTO = findUserByUserId(userId);
+        User user = userMapper.userDtoToUser(userDTO);
 
-            user.setFirstName("ivan");
-            user.setLastName("iadf");
-            UserDTO userDTO = userMapper.userToUserDTO(user);
-            System.out.println(" преобразован пользователь " + userDTO.getFirstName());
-            userDAO.persist(user);
-
-
+        userDAO.persist(user);
     }
 }
 

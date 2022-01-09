@@ -56,4 +56,14 @@ public class VK_ApiImpl implements VK_Api {
 
         return HttpConnectionAgent.connectResponse(uriBuilder);
     }
+
+    @Override
+    public HttpResponse findUserByUserId(String userId) {
+        uriBuilder.setScheme(PROTOCOL).setHost(HOST).setPath("/method/users.get")
+                .setParameter("user_id", userId)
+                .setParameter("v", API_VERSION)
+                .setParameter("access_token", ACCESS_TOKEN);
+
+        return HttpConnectionAgent.connectResponse(uriBuilder);
+    }
 }

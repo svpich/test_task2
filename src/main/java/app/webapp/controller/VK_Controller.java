@@ -34,6 +34,6 @@ public class VK_Controller {
 
     @GetMapping("/method3")
     public void getByUserId(@RequestParam("userId")String userId) {
-        vk_apiService.saveGroupToDB(userId);
+        vk_apiService.findUserByUserId(userId);
     }
 }
