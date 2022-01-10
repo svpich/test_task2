@@ -1,12 +1,14 @@
 package app.service.impl;
 
 import app.api.abstracts.VK_Api;
-import app.converter.UserMapper;
+import app.converter.CustomRequestMapper;
+import app.dao.abstracts.CustomRequestDAO;
 import app.dao.abstracts.GroupDAO;
-import app.dao.abstracts.UserDAO;
+
+import app.model.dto.CustomRequestDTO;
 import app.model.dto.GroupDTO;
 import app.model.dto.UserDTO;
-import app.model.entity.User;
+import app.model.entity.CustomRequest;
 import app.service.abstracts.VK_ApiService;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -21,7 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class VK_ApiServiceImpl implements VK_ApiService {
@@ -29,16 +35,18 @@ public class VK_ApiServiceImpl implements VK_ApiService {
     private static final Logger logger = LoggerFactory.getLogger(VK_ApiServiceImpl.class);
     private final VK_Api vkAPI;
     private final GroupDAO groupDAO;
-    private final UserDAO userDAO;
-    private final UserMapper userMapper;
+    private final CustomRequestDAO customRequestDAO;
+    private final CustomRequestMapper customRequestMapper;
+
 
     @Autowired
-    public VK_ApiServiceImpl(VK_Api vkAPI, GroupDAO groupDAO, UserDAO userDAO,
-                             UserMapper userMapper) {
+    public VK_ApiServiceImpl(VK_Api vkAPI, GroupDAO groupDAO,
+                             CustomRequestDAO customRequestDAO,
+                             CustomRequestMapper customRequestMapper) {
         this.vkAPI = vkAPI;
         this.groupDAO = groupDAO;
-        this.userDAO = userDAO;
-        this.userMapper = userMapper;
+        this.customRequestDAO = customRequestDAO;
+        this.customRequestMapper = customRequestMapper;
     }
 
     @Override
@@ -71,8 +79,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
                         GroupDTO groupDTO = new GroupDTO();
                         groupDTO.setId((int) item.get("id"));
-                        groupDTO.setName(new String(((String) item.get("name"))
-                                .getBytes("Windows-1251"), StandardCharsets.UTF_8));
+                        groupDTO.setName((String) item.get("name"));
                         groupDTO.setIsClosed((int) item.get("is_closed"));
                         groupDTO.setType((String) item.get("type"));
                         groupDTO.setScreenName((String) item.get("screen_name"));
@@ -193,8 +200,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
                         GroupDTO groupDTO = new GroupDTO();
                         groupDTO.setId((int) item.get("id"));
-                        groupDTO.setName(new String(((String) item.get("name"))
-                                .getBytes("Windows-1251"), StandardCharsets.UTF_8));
+                        groupDTO.setName((String) item.get("name"));
                         groupDTO.setIsClosed((int) item.get("is_closed"));
                         groupDTO.setType((String) item.get("type"));
                         groupDTO.setScreenName((String) item.get("screen_name"));
@@ -215,59 +221,6 @@ public class VK_ApiServiceImpl implements VK_ApiService {
                 e.printStackTrace();
             }
         } // ОБРАБОТАТЬ ДРУГИЕ СТАТУСЫ
-        return resultSet;
-    }
-
-    @Override
-    // Получаем группы по подстроке и возвращаем в каких из них состоит пользователь или его друзья.
-    public Set<GroupDTO> findUserGroupsAndUserFriendsGroupsByUserIdAndGroupsBySubstring
-            (String userId, String subString) {
-
-        Set<GroupDTO> userGroupsSet = findUserGroupsByUserId(userId);
-        Set<GroupDTO> userFriendsGroupsSet = findUserFriendsGroupsByUserId(userId);
-        Set<GroupDTO> groupsBySubstringSet = findGroupsBySubstring(subString);
-
-        Set<GroupDTO> tempSet = new HashSet<>(userGroupsSet);
-        tempSet.addAll(userFriendsGroupsSet);
-
-        Set<GroupDTO> resultSet = new HashSet<>();
-        boolean alreadyExist;
-
-        for (GroupDTO e : tempSet) {
-            alreadyExist = groupsBySubstringSet.add(e);
-
-            if (!alreadyExist) {
-                resultSet.add(e);
-            }
-        }
-        logger.info("Кол-во групп в которых состоит пользователь или его друзья: " + resultSet.size());
-        return resultSet;
-    }
-
-    @Override
-    public void saveGroupToDB(String userId) {
-
-    }
-
-//                      <<<<<<-------->>>>>>>>
-
-    public Set<GroupDTO> findUserGroupsByUserIdAndGroupsBySubstring
-            (String userId, String subString) {
-
-        Set<GroupDTO> userGroupsSet = findUserGroupsByUserId(userId);
-        Set<GroupDTO> groupsBySubstringSet = findGroupsBySubstring(subString);
-
-        Set<GroupDTO> resultSet = new HashSet<>();
-        boolean alreadyExist;
-
-        for (GroupDTO e : userGroupsSet) {
-            alreadyExist = groupsBySubstringSet.add(e);
-
-            if (!alreadyExist) {
-                resultSet.add(e);
-            }
-        }
-        logger.info("Кол-во групп в которых состоит пользователь: " + resultSet.size());
         return resultSet;
     }
 
@@ -312,12 +265,38 @@ public class VK_ApiServiceImpl implements VK_ApiService {
         return null; //  TODO Изменить значение
     }
 
-    @Transactional
-    public void saveUserToDB(String userId) {
-        UserDTO userDTO = findUserByUserId(userId);
-        User user = userMapper.userDtoToUser(userDTO);
 
-        userDAO.persist(user);
+
+//                      <<<<<<-------->>>>>>>>
+
+//    @Override
+//    public void saveGroupToDB(String userId) {
+//
+//    }
+
+//    @Transactional
+//    public void saveUserToDB(String userId) {
+//        UserDTO userDTO = findUserByUserId(userId);
+//        User user = userMapper.userDtoToUser(userDTO);
+//        userDAO.persist(user);
+//    }
+
+    @Transactional
+    public void saveCustomRequestToDB(LocalDateTime localDateTime,
+                                      String userId, String subString,
+                                      Set<GroupDTO> groupDTOSet) {
+        LocalDate localDate = localDateTime.toLocalDate();
+        LocalTime localTime = localDateTime.toLocalTime();
+
+        CustomRequestDTO customRequestDTO = new CustomRequestDTO();
+        customRequestDTO.setDate(localDate);
+        customRequestDTO.setTime(localTime);
+        customRequestDTO.setParamUserId(userId);
+        customRequestDTO.setParamSubstring(subString);
+        customRequestDTO.setGroupSet(groupDTOSet);
+
+        CustomRequest customRequest = customRequestMapper.customRequestDtoToCustomRequest(customRequestDTO);
+        customRequestDAO.persist(customRequest);
     }
 }
 

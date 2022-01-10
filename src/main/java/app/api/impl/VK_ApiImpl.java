@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class VK_ApiImpl implements VK_Api {
 
     URIBuilder uriBuilder;
-    final static String ACCESS_TOKEN = "bc8ae6c17c8d9122d1375d6f6ec8b12269c6ba38853caaa50a79f9155f1435fd6e87480de3bba1d478441";
+    final static String ACCESS_TOKEN = "a43e21197a2183078bb09d628cf390eb469b674dee0b4b8bc3bc7c10034702154b9317b88cd2c1087c984";
     final static String PROTOCOL = "https";
     final static String HOST = "api.vk.com";
     final static String API_VERSION = "5.131";
