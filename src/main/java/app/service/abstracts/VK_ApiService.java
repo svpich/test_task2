@@ -4,6 +4,7 @@ import app.model.dto.GroupDTO;
 import app.model.dto.UserDTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 public interface VK_ApiService {
@@ -16,6 +17,8 @@ public interface VK_ApiService {
     Set<UserDTO> findUserFriendsByUserId(String userId);
 
     Set<GroupDTO> findUserGroupsByUserId(String userId);
+
+    List<GroupDTO> findAllGroupFromDB();
 
 //    void saveGroupToDB(String userId);
 

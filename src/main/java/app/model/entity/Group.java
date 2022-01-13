@@ -1,5 +1,7 @@
 package app.model.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,7 +41,11 @@ public class Group {
     @Column(name = "photo_200")
     private String photo_200;
 
-    @ManyToMany(mappedBy = "groupSet", fetch = FetchType.EAGER)
+    @JsonIgnore
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @JoinTable(name = "group_request",
+            joinColumns = {@JoinColumn(name = "group_id")},
+            inverseJoinColumns = {@JoinColumn(name = "request_id")})
     private Set<CustomRequest> customRequestSet;
 
 }

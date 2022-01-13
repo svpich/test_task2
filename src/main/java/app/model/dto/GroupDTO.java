@@ -1,5 +1,6 @@
 package app.model.dto;
 
+import app.model.entity.CustomRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +21,5 @@ public class GroupDTO {
     private String photo_50;
     private String photo_100;
     private String photo_200;
-    private Set<CustomRequestDTO> customRequestSet;
-
-
+//    private Set<CustomRequest> customRequestSet;
 }

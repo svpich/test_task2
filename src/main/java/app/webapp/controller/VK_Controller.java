@@ -8,6 +8,7 @@ import app.service.abstracts.VK_ApiService;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -45,7 +46,7 @@ public class VK_Controller {
     }
 
     @GetMapping("/method3")
-    public void getByUserId(@RequestParam("userId")String userId) {
-        vk_apiService.findUserByUserId(userId);
+    public List<GroupDTO> findAllGroupFromDB() {
+        return vk_apiService.findAllGroupFromDB();
     }
 }

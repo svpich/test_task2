@@ -1,5 +1,6 @@
 package app.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,10 @@ public class CustomRequest {
     @Column(name = "param_substring")
     private String paramSubstring;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @JsonIgnore
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @JoinTable(name = "group_request",
+            joinColumns = {@JoinColumn(name = "request_id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id")})
     private Set<Group> groupSet;
 }

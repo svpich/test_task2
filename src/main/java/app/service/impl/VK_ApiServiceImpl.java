@@ -2,13 +2,16 @@ package app.service.impl;
 
 import app.api.abstracts.VK_Api;
 import app.converter.CustomRequestMapper;
+import app.converter.GroupMapper;
 import app.dao.abstracts.CustomRequestDAO;
 import app.dao.abstracts.GroupDAO;
 
+import app.dao.impl.GroupDAOImpl;
 import app.model.dto.CustomRequestDTO;
 import app.model.dto.GroupDTO;
 import app.model.dto.UserDTO;
 import app.model.entity.CustomRequest;
+import app.model.entity.Group;
 import app.service.abstracts.VK_ApiService;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -18,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -26,7 +30,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -37,16 +43,19 @@ public class VK_ApiServiceImpl implements VK_ApiService {
     private final GroupDAO groupDAO;
     private final CustomRequestDAO customRequestDAO;
     private final CustomRequestMapper customRequestMapper;
+    private final GroupMapper groupMapper;
 
 
     @Autowired
     public VK_ApiServiceImpl(VK_Api vkAPI, GroupDAO groupDAO,
                              CustomRequestDAO customRequestDAO,
-                             CustomRequestMapper customRequestMapper) {
+                             CustomRequestMapper customRequestMapper,
+                             GroupMapper groupMapper) {
         this.vkAPI = vkAPI;
         this.groupDAO = groupDAO;
         this.customRequestDAO = customRequestDAO;
         this.customRequestMapper = customRequestMapper;
+        this.groupMapper = groupMapper;
     }
 
     @Override
@@ -89,7 +98,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
                         resultSet.add(groupDTO);
                     }
-                    logger.info("Получен список групп по подстроке: " + subString);
+                    logger.info("Получен список групп (" + itemsArray.length() + "шт.) по подстроке: " + subString);
                 } else if (outerObject.has("error")) {
                     JSONObject innerObject = outerObject.getJSONObject("error");
 
@@ -210,7 +219,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
                         resultSet.add(groupDTO);
                     }
-                    logger.info("Получен список групп пользователя с id: " + userId);
+                    logger.info("Получен список групп (" + itemsArray.length() + "шт.) пользователя с id: " + userId);
                 } else if (outerObject.has("error")) {
                     JSONObject innerObject = outerObject.getJSONObject("error");
 
@@ -296,7 +305,22 @@ public class VK_ApiServiceImpl implements VK_ApiService {
         customRequestDTO.setGroupSet(groupDTOSet);
 
         CustomRequest customRequest = customRequestMapper.customRequestDtoToCustomRequest(customRequestDTO);
+
+        logger.info("Запрос добавлен в БД.");
         customRequestDAO.persist(customRequest);
+    }
+
+    @Transactional
+    public List<GroupDTO> findAllGroupFromDB() {
+        List<Group> groupList = groupDAO.findAll();
+        List<GroupDTO> groupDtoList = new ArrayList<>();
+
+        for (Group e : groupList) {
+            groupDtoList.add(groupMapper.groupToGroupDTO(e));
+        }
+
+        logger.info("Получен полный список групп из БД.");
+        return groupDtoList;
     }
 }
 

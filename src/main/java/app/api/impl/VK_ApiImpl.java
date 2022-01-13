@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class VK_ApiImpl implements VK_Api {
 
     URIBuilder uriBuilder;
-    final static String ACCESS_TOKEN = "a43e21197a2183078bb09d628cf390eb469b674dee0b4b8bc3bc7c10034702154b9317b88cd2c1087c984";
+    final static String ACCESS_TOKEN = "355f6d5208af06205a5ad9cd55defaf5e1edebd3cc5ecd117010d705d9ec1dc542dd95b747eee9bb26b47";
     final static String PROTOCOL = "https";
     final static String HOST = "api.vk.com";
     final static String API_VERSION = "5.131";
@@ -50,6 +50,7 @@ public class VK_ApiImpl implements VK_Api {
     public HttpResponse findUserGroupsByUserId(String userId) {
         uriBuilder.setScheme(PROTOCOL).setHost(HOST).setPath("/method/groups.get")
                 .setParameter("user_id", userId)
+                .setParameter("count", "20")
                 .setParameter("extended", "1")
                 .setParameter("v", API_VERSION)
                 .setParameter("access_token", ACCESS_TOKEN);
