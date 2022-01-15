@@ -2,6 +2,8 @@ package app.webapp.controller;
 
 import app.dao.abstracts.GroupDAO;
 import app.model.dto.GroupDTO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import app.service.abstracts.VK_ApiService;
@@ -11,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Api(value = "/api")
 @RestController
 @RequestMapping("/api")
 public class VK_Controller {
@@ -22,6 +25,8 @@ public class VK_Controller {
         this.vk_apiService = vk_apiService;
     }
 
+    /**Выводит данные о профиле*/
+    @ApiOperation(value = "Выводит данные о профиле")
     @GetMapping("/method1")
     public Set<GroupDTO> findUserGroupsAndUserFriendsGroupsByUserIdAndGroupsBySubstring
             (@RequestParam("userId")String userId,
@@ -33,7 +38,7 @@ public class VK_Controller {
         return responseSet;
     }
 
-    @GetMapping("/method2")
+    @PostMapping("/method2")
     public void findUserGroupsByUserIdAndGroupsBySubstringAndSaveToDB
             (@RequestParam("subString")String subString,
              @RequestParam("userId")String userId) {
