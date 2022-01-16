@@ -2,6 +2,9 @@ package app.service.abstracts;
 
 import app.model.dto.GroupDTO;
 import app.model.dto.UserDTO;
+import app.model.entity.Group;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +22,8 @@ public interface VK_ApiService {
     Set<GroupDTO> findUserGroupsByUserId(String userId);
 
     List<GroupDTO> findAllGroupFromDB();
+
+    Page<Group> findAllGroupWithPagination(Pageable pageable);
 
 //    void saveGroupToDB(String userId);
 

@@ -6,7 +6,7 @@ import app.converter.GroupMapper;
 import app.dao.abstracts.CustomRequestDAO;
 import app.dao.abstracts.GroupDAO;
 
-import app.dao.impl.GroupDAOImpl;
+import app.dao.abstracts.GroupDAOPagination;
 import app.model.dto.CustomRequestDTO;
 import app.model.dto.GroupDTO;
 import app.model.dto.UserDTO;
@@ -20,8 +20,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -44,18 +45,23 @@ public class VK_ApiServiceImpl implements VK_ApiService {
     private final CustomRequestDAO customRequestDAO;
     private final CustomRequestMapper customRequestMapper;
     private final GroupMapper groupMapper;
+    private final GroupDAOPagination groupDAOPagination;
+
+    @Autowired
+    private VK_ApiService vk_apiServiceImpl;
 
 
     @Autowired
     public VK_ApiServiceImpl(VK_Api vkAPI, GroupDAO groupDAO,
                              CustomRequestDAO customRequestDAO,
                              CustomRequestMapper customRequestMapper,
-                             GroupMapper groupMapper) {
+                             GroupMapper groupMapper, GroupDAOPagination groupDAOPagination) {
         this.vkAPI = vkAPI;
         this.groupDAO = groupDAO;
         this.customRequestDAO = customRequestDAO;
         this.customRequestMapper = customRequestMapper;
         this.groupMapper = groupMapper;
+        this.groupDAOPagination = groupDAOPagination;
     }
 
     @Override
@@ -321,6 +327,11 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
         logger.info("Получен полный список групп из БД.");
         return groupDtoList;
+    }
+
+
+    public Page<Group> findAllGroupWithPagination(Pageable pageable) {
+        return groupDAOPagination.findAll(pageable);
     }
 }
 
