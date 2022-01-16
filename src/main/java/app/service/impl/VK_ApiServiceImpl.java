@@ -283,8 +283,8 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
         CustomRequest customRequest = customRequestMapper.customRequestDtoToCustomRequest(customRequestDTO);
 
-        logger.info("Запрос добавлен в БД.");
         customRequestDAO.persist(customRequest);
+        logger.info("Запрос добавлен в БД.");
     }
 
     public Page<Group> findAllGroupWithPagination(Pageable pageable) {

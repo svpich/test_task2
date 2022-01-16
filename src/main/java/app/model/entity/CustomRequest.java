@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -34,7 +35,7 @@ public class CustomRequest {
     @Column(name = "param_substring")
     private String paramSubstring;
 
-//    @JsonIgnore
+
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinTable(name = "group_request",
             joinColumns = {@JoinColumn(name = "request_id")},
