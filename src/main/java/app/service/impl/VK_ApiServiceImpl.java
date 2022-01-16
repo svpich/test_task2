@@ -41,42 +41,32 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(VK_ApiServiceImpl.class);
     private final VK_Api vkAPI;
-    private final GroupDAO groupDAO;
     private final CustomRequestDAO customRequestDAO;
     private final CustomRequestMapper customRequestMapper;
-    private final GroupMapper groupMapper;
     private final GroupDAOPagination groupDAOPagination;
 
     @Autowired
-    private VK_ApiService vk_apiServiceImpl;
-
-
-    @Autowired
-    public VK_ApiServiceImpl(VK_Api vkAPI, GroupDAO groupDAO,
+    public VK_ApiServiceImpl(VK_Api vkAPI,
                              CustomRequestDAO customRequestDAO,
                              CustomRequestMapper customRequestMapper,
-                             GroupMapper groupMapper, GroupDAOPagination groupDAOPagination) {
+                             GroupDAOPagination groupDAOPagination) {
         this.vkAPI = vkAPI;
-        this.groupDAO = groupDAO;
         this.customRequestDAO = customRequestDAO;
         this.customRequestMapper = customRequestMapper;
-        this.groupMapper = groupMapper;
         this.groupDAOPagination = groupDAOPagination;
     }
 
     @Override
     public Set<GroupDTO> findGroupsBySubstring(String subString) {
         Set<GroupDTO> resultSet = new HashSet<>();
-
         HttpResponse response = vkAPI.findGroupsBySubstring(subString);
-
         int status = response.getStatusLine().getStatusCode();
 
         if (status == 200) {
             StringWriter content = new StringWriter();
 
             try {
-                IOUtils.copy(response.getEntity().getContent(), content); //копируем данные из одного потока в другой
+                IOUtils.copy(response.getEntity().getContent(), content);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -114,7 +104,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } // ОБРАБОТАТЬ ДРУГИЕ СТАТУСЫ
+        }
         return resultSet;
     }
 
@@ -136,16 +126,14 @@ public class VK_ApiServiceImpl implements VK_ApiService {
     @Override
     public Set<UserDTO> findUserFriendsByUserId(String userId) {
         Set<UserDTO> resultSet = new HashSet<>();
-
         HttpResponse response = vkAPI.findUserFriendsByUserId(userId);
-
         int status = response.getStatusLine().getStatusCode();
 
         if (status == 200) {
             StringWriter content = new StringWriter();
 
             try {
-                IOUtils.copy(response.getEntity().getContent(), content); //копируем данные из одного потока в другой
+                IOUtils.copy(response.getEntity().getContent(), content);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -180,7 +168,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } // ОБРАБОТАТЬ ДРУГИЕ СТАТУСЫ
+        }
         return resultSet;
     }
 
@@ -196,7 +184,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
             StringWriter content = new StringWriter();
 
             try {
-                IOUtils.copy(response.getEntity().getContent(), content); //копируем данные из одного потока в другой
+                IOUtils.copy(response.getEntity().getContent(), content);
             } catch (IOException e) {
                 e.printStackTrace();
                 System.exit(-1);
@@ -235,21 +223,21 @@ public class VK_ApiServiceImpl implements VK_ApiService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } // ОБРАБОТАТЬ ДРУГИЕ СТАТУСЫ
+        }
         return resultSet;
     }
 
     @Override
     public UserDTO findUserByUserId(String userId) {
         HttpResponse response = vkAPI.findUserByUserId(userId);
-
         int status = response.getStatusLine().getStatusCode();
+        UserDTO userDTO = new UserDTO();
 
         if (status == 200) {
             StringWriter content = new StringWriter();
 
             try {
-                IOUtils.copy(response.getEntity().getContent(), content); //копируем данные из одного потока в другой
+                IOUtils.copy(response.getEntity().getContent(), content);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -261,7 +249,6 @@ public class VK_ApiServiceImpl implements VK_ApiService {
                     JSONArray itemsArray = outerObject.getJSONArray("response");
                     JSONObject item = (JSONObject) itemsArray.get(0);
 
-                    UserDTO userDTO = new UserDTO();
                     userDTO.setId((int) item.get("id"));
                     userDTO.setFirstName(((String) item.get("first_name")));
                     userDTO.setLastName(((String) item.get("last_name")));
@@ -277,24 +264,8 @@ public class VK_ApiServiceImpl implements VK_ApiService {
                 e.printStackTrace();
             }
         }
-        return null; //  TODO Изменить значение
+        return userDTO;
     }
-
-
-
-//                      <<<<<<-------->>>>>>>>
-
-//    @Override
-//    public void saveGroupToDB(String userId) {
-//
-//    }
-
-//    @Transactional
-//    public void saveUserToDB(String userId) {
-//        UserDTO userDTO = findUserByUserId(userId);
-//        User user = userMapper.userDtoToUser(userDTO);
-//        userDAO.persist(user);
-//    }
 
     @Transactional
     public void saveCustomRequestToDB(LocalDateTime localDateTime,
@@ -315,20 +286,6 @@ public class VK_ApiServiceImpl implements VK_ApiService {
         logger.info("Запрос добавлен в БД.");
         customRequestDAO.persist(customRequest);
     }
-
-    @Transactional
-    public List<GroupDTO> findAllGroupFromDB() {
-        List<Group> groupList = groupDAO.findAll();
-        List<GroupDTO> groupDtoList = new ArrayList<>();
-
-        for (Group e : groupList) {
-            groupDtoList.add(groupMapper.groupToGroupDTO(e));
-        }
-
-        logger.info("Получен полный список групп из БД.");
-        return groupDtoList;
-    }
-
 
     public Page<Group> findAllGroupWithPagination(Pageable pageable) {
         return groupDAOPagination.findAll(pageable);

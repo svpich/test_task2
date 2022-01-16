@@ -27,16 +27,16 @@ public class ReadWriteDAOImpl<E> implements ReadWriteDAO<E> {
         entityManager.persist(e);
     }
 
-    @Override
-    public List<E> findAll() {
-        return entityManager.createQuery("from " + clazz.getName()).getResultList();
-    }
+//    @Override
+//    public List<E> findAll() {
+//        return entityManager.createQuery("from " + clazz.getName()).getResultList();
+//    }
 
-    @Override
-    public Optional<E> findById(String id) {
-        return entityManager.createQuery("select c from " + clazz.getName() + " c where c.id = :id")
-                .setParameter("id", id).getResultList().stream().findAny();
-    }
+//    @Override
+//    public Optional<E> findById(String id) {
+//        return entityManager.createQuery("select c from " + clazz.getName() + " c where c.id = :id")
+//                .setParameter("id", id).getResultList().stream().findAny();
+//    }
 
 
 }

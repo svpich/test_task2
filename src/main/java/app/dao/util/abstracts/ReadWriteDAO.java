@@ -6,6 +6,6 @@ import java.util.Optional;
 public interface ReadWriteDAO<E> {
 
     void persist(E e);
-    List<E> findAll();
-    Optional<E> findById(String id);
+//    List<E> findAll();
+//    Optional<E> findById(String id);
 }

@@ -1,12 +1,10 @@
 package app.model.dto;
 
-import app.model.entity.CustomRequest;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -21,5 +19,4 @@ public class GroupDTO {
     private String photo_50;
     private String photo_100;
     private String photo_200;
-//    private Set<CustomRequest> customRequestSet;
 }
