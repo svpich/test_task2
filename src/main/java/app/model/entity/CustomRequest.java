@@ -36,7 +36,7 @@ public class CustomRequest {
     private String paramSubstring;
 
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "group_request",
             joinColumns = {@JoinColumn(name = "request_id")},
             inverseJoinColumns = {@JoinColumn(name = "group_id")})

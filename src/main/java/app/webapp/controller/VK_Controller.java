@@ -1,6 +1,5 @@
 package app.webapp.controller;
 
-import app.dao.abstracts.GroupDAO;
 import app.model.dto.GroupDTO;
 import app.service.abstracts.VK_ApiService;
 import io.swagger.annotations.ApiOperation;

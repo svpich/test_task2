@@ -20,7 +20,7 @@ public interface VK_ApiService {
 
     Set<GroupDTO> findUserGroupsByUserId(String userId);
 
-    Page<Group> findAllGroupWithPagination(Pageable pageable);
+    Page<GroupDTO> findAllGroupWithPagination(Pageable pageable);
 
     void saveCustomRequestToDB(LocalDateTime localDateTime,
                                String userId, String subString,

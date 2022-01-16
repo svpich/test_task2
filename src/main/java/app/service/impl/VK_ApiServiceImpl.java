@@ -4,9 +4,8 @@ import app.api.abstracts.VK_Api;
 import app.converter.CustomRequestMapper;
 import app.converter.GroupMapper;
 import app.dao.abstracts.CustomRequestDAO;
-import app.dao.abstracts.GroupDAO;
 
-import app.dao.abstracts.GroupDAOPagination;
+import app.dao.abstracts.GroupDAO;
 import app.model.dto.CustomRequestDTO;
 import app.model.dto.GroupDTO;
 import app.model.dto.UserDTO;
@@ -21,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,17 +43,19 @@ public class VK_ApiServiceImpl implements VK_ApiService {
     private final VK_Api vkAPI;
     private final CustomRequestDAO customRequestDAO;
     private final CustomRequestMapper customRequestMapper;
-    private final GroupDAOPagination groupDAOPagination;
+    private final GroupDAO groupDAO;
+    private final GroupMapper groupMapper;
 
     @Autowired
     public VK_ApiServiceImpl(VK_Api vkAPI,
                              CustomRequestDAO customRequestDAO,
                              CustomRequestMapper customRequestMapper,
-                             GroupDAOPagination groupDAOPagination) {
+                             GroupDAO groupDAO, GroupMapper groupMapper) {
         this.vkAPI = vkAPI;
         this.customRequestDAO = customRequestDAO;
         this.customRequestMapper = customRequestMapper;
-        this.groupDAOPagination = groupDAOPagination;
+        this.groupDAO = groupDAO;
+        this.groupMapper = groupMapper;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
                         item = (JSONObject) itemsArray.get(i);
 
                         GroupDTO groupDTO = new GroupDTO();
-                        groupDTO.setId((int) item.get("id"));
+                        groupDTO.setGroupId((int) item.get("id"));
                         groupDTO.setName((String) item.get("name"));
                         groupDTO.setIsClosed((int) item.get("is_closed"));
                         groupDTO.setType((String) item.get("type"));
@@ -202,7 +204,7 @@ public class VK_ApiServiceImpl implements VK_ApiService {
                         item = (JSONObject) itemsArray.get(i);
 
                         GroupDTO groupDTO = new GroupDTO();
-                        groupDTO.setId((int) item.get("id"));
+                        groupDTO.setGroupId((int) item.get("id"));
                         groupDTO.setName((String) item.get("name"));
                         groupDTO.setIsClosed((int) item.get("is_closed"));
                         groupDTO.setType((String) item.get("type"));
@@ -283,12 +285,23 @@ public class VK_ApiServiceImpl implements VK_ApiService {
 
         CustomRequest customRequest = customRequestMapper.customRequestDtoToCustomRequest(customRequestDTO);
 
-        customRequestDAO.persist(customRequest);
+        customRequestDAO.save(customRequest);
         logger.info("Запрос добавлен в БД.");
     }
 
-    public Page<Group> findAllGroupWithPagination(Pageable pageable) {
-        return groupDAOPagination.findAll(pageable);
+    public Page<GroupDTO> findAllGroupWithPagination(Pageable pageable) {
+        Set<GroupDTO> set = new HashSet<>();
+                groupDAO.findAll().forEach(e -> set.add(groupMapper.groupToGroupDTO(e)));
+        List<GroupDTO> list = new ArrayList<>(set);
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+
+        if(start > list.size()) {
+            return new PageImpl<>(new ArrayList<>(), pageable, list.size());
+        }
+
+        return new PageImpl<>(list.subList(start, end), pageable, list.size());
     }
 }
 

@@ -17,8 +17,11 @@ import java.util.Set;
 public class Group {
 
     @Id
-    @Column(name = "id")
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int id;
+
+    @Column(name = "group_id")
+    private int groupId;
 
     @Column(name = "name")
     private String name;

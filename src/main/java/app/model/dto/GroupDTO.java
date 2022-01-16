@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "groupId")
 public class GroupDTO {
-    private int id;
+    private int groupId;
     private String name;
     private String screenName;
     private int isClosed;
