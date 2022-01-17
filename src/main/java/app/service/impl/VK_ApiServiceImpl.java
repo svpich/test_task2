@@ -1,6 +1,6 @@
 package app.service.impl;
 
-import app.api.abstracts.VK_Api;
+import app.api.abstracts.Api;
 import app.converter.CustomRequestMapper;
 import app.converter.GroupMapper;
 import app.dao.abstracts.CustomRequestDAO;
@@ -10,7 +10,6 @@ import app.model.dto.CustomRequestDTO;
 import app.model.dto.GroupDTO;
 import app.model.dto.UserDTO;
 import app.model.entity.CustomRequest;
-import app.model.entity.Group;
 import app.service.abstracts.VK_ApiService;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -40,14 +39,14 @@ import java.util.Set;
 public class VK_ApiServiceImpl implements VK_ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(VK_ApiServiceImpl.class);
-    private final VK_Api vkAPI;
+    private final Api vkAPI;
     private final CustomRequestDAO customRequestDAO;
     private final CustomRequestMapper customRequestMapper;
     private final GroupDAO groupDAO;
     private final GroupMapper groupMapper;
 
     @Autowired
-    public VK_ApiServiceImpl(VK_Api vkAPI,
+    public VK_ApiServiceImpl(Api vkAPI,
                              CustomRequestDAO customRequestDAO,
                              CustomRequestMapper customRequestMapper,
                              GroupDAO groupDAO, GroupMapper groupMapper) {

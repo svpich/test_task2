@@ -1,22 +1,22 @@
 package app.api.impl;
 
-import app.api.abstracts.VK_Api;
+import app.api.abstracts.Api;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VK_ApiImpl implements VK_Api {
+public class VK_Api implements Api {
 
     URIBuilder uriBuilder;
-    final static String ACCESS_TOKEN = "76c743c57fae7b13bde24fe903b6e925e199a4048c64aa73293bf567525cd0aea0cf66f1cde915ea5fede";
+    final static String ACCESS_TOKEN = "059223d3a407c160534593c5572a0e6fe042507584555a69840a8cdd02c45c56c146d951fff77f81a7f3e";
     final static String PROTOCOL = "https";
     final static String HOST = "api.vk.com";
     final static String API_VERSION = "5.131";
 
     @Autowired
-    public VK_ApiImpl (URIBuilder uriBuilder) {
+    public VK_Api(URIBuilder uriBuilder) {
         this.uriBuilder = uriBuilder;
     }
 
@@ -28,11 +28,6 @@ public class VK_ApiImpl implements VK_Api {
                 .setParameter("access_token", ACCESS_TOKEN);
 
         return HttpConnectionAgent.connectResponse(uriBuilder);
-    }
-
-    @Override
-    public HttpResponse findUserFriendsGroupsByUserId() {
-        return null;
     }
 
     @Override
